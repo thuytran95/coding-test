@@ -5,45 +5,29 @@ const readlineInterface = readline.createInterface({
   output: process.stdout,
 });
 
-const recalculateParenthesesAfterFlip = (
-  s,
-  totalOpenParenthese,
-  totalCloseParenthese
-) => {
-  let newTotalOpenParenthese = totalOpenParenthese;
-  let newTotalCloseParenthese = totalCloseParenthese;
+const countValidPairs = (str) => {
+  let balance = 0;
+  let pairs = 0;
 
-  if (s === "(") {
-    newTotalOpenParenthese--;
-    newTotalCloseParenthese++;
-  } else {
-    newTotalOpenParenthese++;
-    newTotalCloseParenthese--;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === "(") {
+      balance++;
+    } else if (balance > 0) {
+      balance--;
+      pairs++;
+    }
   }
-
-  return Math.min(newTotalOpenParenthese, newTotalCloseParenthese);
+  return pairs;
 };
 
 const countMaxPairsAfterSwitch = (s) => {
   const strLength = s.length;
-  let totalOpenParenthese = 0;
-  let totalCloseParenthese = 0;
+  let maxPairs = countValidPairs(s);
 
   for (let i = 0; i < strLength; i++) {
-    if (s[i] === "(") totalOpenParenthese++;
-    else totalCloseParenthese++;
-  }
-
-  let maxPairs = Math.min(totalOpenParenthese, totalCloseParenthese);
-
-  for (let i = 0; i < strLength; i++) {
-    const newMaxPairs = recalculateParenthesesAfterFlip(
-      s[i],
-      totalOpenParenthese,
-      totalCloseParenthese
-    );
-
-    maxPairs = Math.max(maxPairs, newMaxPairs);
+    const newStr = s.substring(0, i) + (s[i] === "(" ? ")" : "(") + s.substring(i + 1);
+    const newPairs = countValidPairs(newStr);
+    maxPairs = Math.max(maxPairs, newPairs);
   }
 
   return maxPairs;
